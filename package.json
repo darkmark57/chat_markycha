@@ -1,0 +1,22 @@
+{
+  "name": "chat_markycha",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darkmark57/chat_markycha.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/darkmark57/chat_markycha/issues"
+  },
+  "homepage": "https://github.com/darkmark57/chat_markycha#readme"
+}
