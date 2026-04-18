@@ -89,3 +89,38 @@ form button {
     border: none;
     cursor: pointer;
 }
+
+main#register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+main#register form {
+    padding: 1rem;
+    border-radius: 1rem;
+    flex-direction: column;
+}
+
+main#register form label {
+    margin-top: 1rem;
+}
+
+
+main#login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+main#login form {
+    padding: 1rem;
+    border-radius: 1rem;
+    flex-direction: column;
+}
+
+main#login form label {
+    margin-top: 1rem;
+}
