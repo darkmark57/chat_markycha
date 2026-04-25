@@ -3,7 +3,10 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { readFileSync, readSync } from "fs"
 import { Server } from "socket.io"
-import db, { init as initDB, getMessages, addMessage, isUserExist, addUser} from "./db.js"
+import db, { init as initDB, getMessages, addMessage, isUserExist, addUser, getUser } from "./db.js"
+import jwt from "jsonwebtoken"
+
+import cookie from "cookie"
 
 initDB()
 
@@ -14,6 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const server = createServer(async (req, res) => {
     switch (req.url) {
         case "/":
+            guarded(req, res)
             let indexHtmlFile = getStaticFile("index.html")
             res.writeHead(200, { "content-type": "text/html" })
             res.end(indexHtmlFile)
@@ -78,7 +82,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("new_message", async (data) => {
-        console.log(data)
+
         io.emit("message", {
             user: nickname,
             message: data
@@ -88,7 +92,7 @@ io.on("connection", (socket) => {
 })
 
 
-server.listen(3000, () => console.log("Server on!"))
+server.listen(3000, () => console.log("Server on! Go check port 3000"))
 
 function getStaticFile(name) {
     let pathToFile = path.join(__dirname, "static", name)
@@ -98,7 +102,6 @@ function getStaticFile(name) {
 }
 
 async function registerUser(req, res, data) {
-    console.log(data)
     let p = JSON.parse(data)
     let login = p.login
     let password = p.password
@@ -131,7 +134,31 @@ async function loginUser(req, res, data) {
     let login = info.login
     let password = info.password
 
-    console.log(login, password)
+    let user = await getUser(login, password)
+    if (user == null){
+        res.status = 404
+        res.end("user not found")
+        return
+    }
+    if(!user){
+        res.status = 401
+        res.end("incorrect credentials")
+        return
+    }
+    let token = jwt.sign({id: user.id, login: user.login}, "abc", {expiresIn: "1h"})
+    res.status = 200
+    res.end(token)
+}
 
-    res.end()
+function getCredentials(c = ""){
+    const cookies = cookie.parse(c)
+    const token = cookie?.token 
+    if (!token) return null
+    let user = jwt.verify(token, "abc")
+    return user
+}
+
+function guarded(req, res){
+    const user = getCredentials(req.headers?.cookie)
+    console.log(user)
 }
